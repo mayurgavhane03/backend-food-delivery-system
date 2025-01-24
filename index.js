@@ -1,36 +1,35 @@
 const express = require('express');
-const app=express();
-const fileupload =require('express-fileupload');
-app.use(fileupload(
-{
-     useTempFiles : true,
-    tempFileDir : '/tmp/'
-}
-));
+const app = express();
+const fileupload = require('express-fileupload');
+const cors = require('cors'); // Import CORS
 
-require("dotenv").config();
-const cookirParser = require("cookie-parser");
- 
-const PORT=process.env.PORT || 5000;
+// Use CORS middleware for all routes
+app.use(cors());
 
-app.use(express.json());
-// request ki body me se json ko parse karne ke liye express.json() ko use karte hai.
+// File upload middleware
+app.use(
+  fileupload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+  })
+);
 
-app.use(cookirParser())
-require("./config/db").dbConnect();
+require('dotenv').config();
+const cookieParser = require('cookie-parser');
+
+const PORT = process.env.PORT || 5000;
+
+app.use(express.json()); // Parse JSON in request body
+app.use(cookieParser());
+
+require('./config/db').dbConnect();
 require('./config/cloudinary').cloudinaryConnect();
 
-
-// import Routes and mount 
-
+// Import Routes and mount
 const user = require('./routes/user');
-app.use("/api/v1",user);
+app.use('/api/v1', user);
 
-// activate the server 
-app.listen(PORT,()=>{
-    console.log(`App is activated at PORT ${PORT} `);
-})
-
-
-// what is cokkie parcer
-
+// Activate the server
+app.listen(PORT, () => {
+  console.log(`App is activated at PORT ${PORT}`);
+});
